@@ -9,7 +9,7 @@ class Program
     static async Task<int> Main(string[] args)
     {
         var results = Parser.Default.ParseArguments<Options>(args);
-        
+
         if (results.Errors.Any())
             return 1;
 
@@ -22,7 +22,7 @@ class Program
         Console.WriteLine($"input        : {opts.InputFile}");
         Console.WriteLine($"stream_id    : {opts.StreamId}");
         Console.WriteLine($"role         : {opts.Role}");
-        Console.WriteLine($"attribute    : {opts.Attribute}");
+        Console.WriteLine($"price        : {opts.Price}");
         Console.WriteLine($"write        : {opts.Write}");
         Console.WriteLine();
 
@@ -40,7 +40,7 @@ class Program
         }
 
         if (!opts.Write)
-            Console.WriteLine("==== WRITE not enabled. Checking attributes only ====");
+            Console.WriteLine("==== WRITE not enabled. Checking songs only ====");
 
         Console.WriteLine();
 
@@ -75,38 +75,11 @@ class Program
         Console.WriteLine($"Loaded {validSongs.Count} song titles");
 
         //=============================================================================
-        // Find matching songs in SSL and add the attribute to it
+        // Find matching songs in SSL and set the price on it
         //=============================================================================
         var ssl = new StreamerSongListClient(streamId,
                                              opts.Role,
                                              opts.AccessToken);
-
-        // Get list of all available attributes ([id][name])
-        var attributes = await ssl.GetAllAttributes();
-
-        Console.WriteLine($"Stream {streamId} has {attributes.Count} attributes:");
-        foreach (var attribute in attributes)
-        {
-            Console.WriteLine($"[{attribute.Key}] = {attribute.Value}");
-        }
-
-        if (!attributes.ContainsValue(opts.Attribute))
-        {
-            Console.WriteLine($"Stream {streamId} does not contain an attribute \"{opts.Attribute}\"");
-            return 1;
-        }
-
-        // Set the desired attribute on the matched songs
-        int matchingId = -1;
-
-        foreach (var pair in attributes)
-        {
-            if (pair.Value == opts.Attribute)
-            {
-                matchingId = pair.Key;
-                break;
-            }
-        }        
 
         const int TITLE_WIDTH = 60;
         Console.WriteLine();
@@ -129,7 +102,7 @@ class Program
             Song matchedSong = new Song();
             if (matchSongs.Items.Count == 0) // No match! Can't do much about that
             {
-                Console.WriteLine($"| {searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {"NOT FOUND", TITLE_WIDTH}|");
+                Console.WriteLine($"| {searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {"NOT FOUND",TITLE_WIDTH}|");
                 continue;
             }
 
@@ -142,16 +115,16 @@ class Program
             matchedSong = matchSongs.Items[0];
             var matchedSongTitle = matchedSong.ToString();
 
-            // Check if attribute already in song
-            bool hasAttribute = matchedSong.AttributeIds.Contains(matchingId);
+            // Check if price already set on song
+            bool priceSet = (matchedSong.MinAmount == opts.Price);
 
             // Print the song list title next to the matched SSL song title
-            Console.WriteLine($"|{(hasAttribute ? " " : "+")}{searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {matchedSongTitle.Substring(0, Math.Min(matchedSongTitle.Length, TITLE_WIDTH)),-TITLE_WIDTH}|");
+            Console.WriteLine($"|{(priceSet ? " " : "+")}{searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {matchedSongTitle.Substring(0, Math.Min(matchedSongTitle.Length, TITLE_WIDTH)),-TITLE_WIDTH}|");
 
-            // Add the attribute if required, and if the write flag is set
-            if (!hasAttribute && opts.Write)
+            // Set the price if required, and if the write flag is set
+            if (!priceSet && opts.Write)
             {
-                await ssl.AddAttribute(matchedSong, matchingId);
+                await ssl.SetPrice(matchedSong, opts.Price);
                 apiCalls++;
             }
 

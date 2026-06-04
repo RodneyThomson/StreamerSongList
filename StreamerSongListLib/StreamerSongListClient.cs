@@ -1,4 +1,5 @@
 ﻿using StreamerSongList.Datatypes;
+using System;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -133,6 +134,42 @@ public class StreamerSongListClient
 
         // When ADDING attributes, must go to the Attributes property (NOT AttributeIds)
         song.Attributes = [.. song.AttributeIds, attributeId]; // Take a copy of existing song.AttributeIds and add
+
+        var payload = JsonSerializer.Serialize(song, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+        var content = new StringContent(
+            payload,
+            Encoding.UTF8,
+            "application/json");
+
+        var response =
+            await _http.PutAsync(
+                url,
+                content,
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    /// <summary>
+    /// Add attribute to specified song
+    /// </summary>
+    public async Task SetPrice(
+        Song song,
+        float price,
+        CancellationToken cancellationToken = default)
+    {
+        // Does the Song already have the correct price set? If so - return
+        if (song.MinAmount == price)
+            return;
+
+        // Otherwise add to song
+        var url = $"https://api.streamersonglist.com/v1/streamers/{_streamerId}/songs/{song.Id}";
+
+        // When doing a SET of a song, attributes must be provided in Attributes, but they are GET from AttributeIds
+        // otherwise the attributes are wiped clean
+        song.Attributes = song.AttributeIds; // Take a copy of existing song.AttributeIds
+        song.MinAmount = price;
 
         var payload = JsonSerializer.Serialize(song, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 

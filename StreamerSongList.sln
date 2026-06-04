@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddAttributeToSongList", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerSongListLib", "StreamerSongListLib\StreamerSongListLib.csproj", "{2EBF374A-D5DD-F76B-3560-5D128D5EC312}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetCostOnSongList", "SetCostOnSongList\SetCostOnSongList.csproj", "{6C84706A-796C-448C-84EA-BE624905F46E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2EBF374A-D5DD-F76B-3560-5D128D5EC312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EBF374A-D5DD-F76B-3560-5D128D5EC312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EBF374A-D5DD-F76B-3560-5D128D5EC312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C84706A-796C-448C-84EA-BE624905F46E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C84706A-796C-448C-84EA-BE624905F46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C84706A-796C-448C-84EA-BE624905F46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C84706A-796C-448C-84EA-BE624905F46E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
