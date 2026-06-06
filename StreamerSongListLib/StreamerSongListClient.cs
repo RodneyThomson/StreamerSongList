@@ -18,6 +18,13 @@ public class StreamerSongListClient
     private readonly int _streamerId;
     private readonly AuthenticationType _authentication;
 
+    /// <summary>
+    /// Construct the StreamerSongListClient. As a number of operations require authorisation, 
+    /// you must provide the authenticationType and accessToken.
+    /// </summary>
+    /// <param name="streamerId"></param>
+    /// <param name="authenticationType"></param>
+    /// <param name="accessToken"></param>
     public StreamerSongListClient(
         int streamerId,
         AuthenticationType authenticationType,
@@ -57,6 +64,50 @@ public class StreamerSongListClient
             return -1;
         else
             return result.Id;
+    }
+
+    /// <summary>Return all songs from SSL</summary>
+    /// <returns>List of songs</returns>
+    /// <remarks>showInactive requires mod/streamer authentication</remarks>
+    public async Task<List<Song>> GetAllSongs(
+        bool showInactive = true,
+        CancellationToken cancellationToken = default)
+    {
+        var allSongs = new List<Song>();
+
+        int size = 100; // Request 100 songs at a time (max allowed by API)
+        int offset = 0;
+
+        // While more songs remain, keep calling API and adding to results
+        do
+        {
+            var url = $"https://api.streamersonglist.com/v1/streamers/{_streamerId}/songs?size={size}&showInactive={(showInactive ? "true" : "false")}&order=asc&current={offset}";
+
+            var response = await _http.GetAsync(url, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var result = JsonSerializer.Deserialize<SearchResult>(
+                json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (result != null && result.Items != null)
+            {
+                allSongs.AddRange(result.Items);
+                offset++;
+                
+                if (allSongs.Count == result.Total)
+                    break; // All songs have been retrieved
+            }
+            else
+                break; // Unknown number songs to retrieve
+        } 
+        while (true); 
+
+        return allSongs;
     }
 
     /// <summary>Search for a song by title or artist. Throws exception if search cannot be completed</summary>

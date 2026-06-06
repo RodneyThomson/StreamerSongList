@@ -8,4 +8,6 @@ public class SearchResult
     public bool Exists => Items.Count > 0;
 
     public List<Song> Items { get; set; } = new();
+
+    public int Total { get; set; }
 }
