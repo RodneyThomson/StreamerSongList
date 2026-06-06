@@ -3,10 +3,13 @@ C# scripts and library for interfacing with StreamerSongList (https://www.stream
 
 - /StreamerSongListLib : Core API interface. Includes methods for:
     - GetStreamerIdFromName(string streamerName) [static]
+    - GetAllSongs(bool showInactive = true)
     - SearchSong(string searchText, bool showInactive = true)
     - GetAllAttributes()
     - AddAttribute(Song song, int attributeId)
+    - SetPrice(Song song, float price)
 - /AddAttributeToSongList : Adds the desired attribute to all songs titles provided in text file
+- /SetCostOnSongList : Sets the price for all songs titles provided in text file
 
 ## Notes
 

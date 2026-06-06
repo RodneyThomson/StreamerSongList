@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddAttributeToSongList", "AddAttributeToSongList\AddAttributeToSongList.csproj", "{E0352099-4ECF-4C39-95BC-557D8655D76D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerSongListLib", "StreamerSongListLib\StreamerSongListLib.csproj", "{2EBF374A-D5DD-F76B-3560-5D128D5EC312}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetCostOnSongList", "SetCostOnSongList\SetCostOnSongList.csproj", "{6C84706A-796C-448C-84EA-BE624905F46E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{372F6357-91F1-4EF2-8EDF-75FAA1F31ABD}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
