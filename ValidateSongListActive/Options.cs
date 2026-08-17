@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using StreamerSongList;
+using System.Runtime.InteropServices;
 
 internal class Options
 {
@@ -11,10 +12,4 @@ internal class Options
 
     [Option('t', "access_token", Required = true, HelpText = "SSL User Access Token. Get from your Profile Settings -> API Access")]
     public string AccessToken { get; set; } = null!;
-
-    [Option('a', "attribute", Required = true, HelpText = "Desired attribute to apply to all songs in the song list")]
-    public string Attribute { get; set; } = null!;
-
-    [Option('w', "write", Required = false, HelpText = "Without -w, the attribute will NOT be written. Running without -w can be used to check for missing attributes (+ next to their name in the list)")]
-    public bool Write { get; set; } = false;
 }

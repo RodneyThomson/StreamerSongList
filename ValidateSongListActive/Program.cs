@@ -21,16 +21,13 @@ class Program
         Console.WriteLine($"Input parameters:");
         Console.WriteLine($"input        : {opts.InputFile}");
         Console.WriteLine($"stream_id    : {opts.StreamId}");
-        Console.WriteLine($"price        : {opts.Price}");
-        Console.WriteLine($"write        : {opts.Write}");
+        Console.WriteLine($"role         : {opts.Role}");
         Console.WriteLine();
-
-        var ssl = new StreamerSongListClient(opts.AccessToken);
 
         int streamId = -1;
         if (!int.TryParse(opts.StreamId, out streamId)) // not a number, must be a name
         {
-            streamId = await ssl.GetStreamerIdFromName(opts.StreamId);
+            streamId = await StreamerSongListClient.GetStreamerIdFromName(opts.StreamId);
             Console.WriteLine($"Obtained SSL stream ID of {streamId} from {opts.StreamId}");
         }
 
@@ -39,9 +36,6 @@ class Program
             Console.WriteLine($"Invalid Stream ID: {opts.StreamId}");
             return 1;
         }
-
-        if (!opts.Write)
-            Console.WriteLine("==== WRITE not enabled. Checking songs only ====");
 
         Console.WriteLine();
 
@@ -76,56 +70,51 @@ class Program
         Console.WriteLine($"Loaded {validSongs.Count} song titles");
 
         //=============================================================================
-        // Find matching songs in SSL and set the price on it
+        // Find matching songs in SSL and add the attribute to it
         //=============================================================================
+        var ssl = new StreamerSongListClient(streamId,
+                                             opts.Role,
+                                             opts.AccessToken);
+
+        // Get list of all available songs in SSL (both active and inactive)
+        var allSongs = await ssl.GetAllSongs(false);
+        var allSongsStrings = allSongs.Select(s => $"{s.Artist} | {s.Title}").ToList();
+
+        Console.WriteLine($"Streamer has {allSongs.Count} songs in total");
+
         
 
-        const int TITLE_WIDTH = 60;
+        // For each song in the supplied song list:
+        //  - Determine the best match against the entire SSL list
+        //  - compare against the SSL search query result
         Console.WriteLine();
-        Console.WriteLine($"{new string('-', 2 * TITLE_WIDTH + 8)}");
-        Console.WriteLine($"| {"Song List Title",-TITLE_WIDTH} <-> {"SSL Title",-TITLE_WIDTH}|");
-        Console.WriteLine($"{new string('-', 2 * TITLE_WIDTH + 8)}");
-
-        // For each song in the song list, search for a unique match
 
         // There is an API rate limit of about 200 per minute (which I hit...). So do at most 1 song every second
         // which requires 2x API calls (1x get song, 1x write attribute).
         // In future might be able to batch update??
         Stopwatch sw = Stopwatch.StartNew();
         int apiCalls = 0;
-        foreach (var searchSong in validSongs)
+        foreach (var song in validSongs)
         {
-            var matchSongs = await ssl.SearchSong(streamId, searchSong);
-            apiCalls++;
+            Console.WriteLine($"searching for {song}...");
+            // using Levenshtein distance
+            var bestMatch = allSongs[StringSearch.GetBestMatch(song, allSongsStrings)];
 
-            Song matchedSong = new Song();
-            if (matchSongs.Items.Count == 0) // No match! Can't do much about that
+            // use SSL
+            var sslMatchResults = await ssl.SearchSong(song);
+            var sslMatch = sslMatchResults.Items.First();
+            if (sslMatch == null)
             {
-                Console.WriteLine($"| {searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {"NOT FOUND",TITLE_WIDTH}|");
+                Console.WriteLine($"No SSL match found for {song}");
                 continue;
             }
+            apiCalls++;
 
-            // SSL Search always seems to return all matching songs from a particular artist.
-            // Options:
-            //   1) Pick the 1st entry (typically right)
-            //   2) Get ALL songs from the streamer and do the song title matching myself (maybe later?)
-            //
-            // For now I'm doing option 1)
-            matchedSong = matchSongs.Items[0];
-            var matchedSongTitle = matchedSong.ToString();
-
-            // Check if price already set on song
-            bool priceSet = (matchedSong.MinTokens == opts.Price);
-
-            // Print the song list title next to the matched SSL song title
-            Console.WriteLine($"|{(priceSet ? " " : "+")}{searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {matchedSongTitle.Substring(0, Math.Min(matchedSongTitle.Length, TITLE_WIDTH)),-TITLE_WIDTH}|");
-
-            // Set the price if required, and if the write flag is set
-            if (!priceSet && opts.Write)
-            {
-                await ssl.SetPrice(streamId, matchedSong, opts.Price);
-                apiCalls++;
-            }
+            // Did we pick the same song? If not, report on the difference
+            if (bestMatch.Id == sslMatch.Id)
+                Console.WriteLine($"YES! Best match for {song} is {bestMatch.Artist} | {bestMatch.Title}");
+            else
+                Console.WriteLine($"NO! Best match for {song} is {bestMatch.Artist} | {bestMatch.Title} but SSL picked {sslMatch.Artist} | {sslMatch.Title}");
 
             // Make sure we don't hit rate limit - 0.5s per call or 120 per minute
             var earliestTime = apiCalls * TimeSpan.FromSeconds(0.5);

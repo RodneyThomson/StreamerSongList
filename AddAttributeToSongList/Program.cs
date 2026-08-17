@@ -21,15 +21,16 @@ class Program
         Console.WriteLine($"Input parameters:");
         Console.WriteLine($"input        : {opts.InputFile}");
         Console.WriteLine($"stream_id    : {opts.StreamId}");
-        Console.WriteLine($"role         : {opts.Role}");
         Console.WriteLine($"attribute    : {opts.Attribute}");
         Console.WriteLine($"write        : {opts.Write}");
         Console.WriteLine();
 
+        var ssl = new StreamerSongListClient(opts.AccessToken);
+
         int streamId = -1;
         if (!int.TryParse(opts.StreamId, out streamId)) // not a number, must be a name
         {
-            streamId = await StreamerSongListClient.GetStreamerIdFromName(opts.StreamId);
+            streamId = await ssl.GetStreamerIdFromName(opts.StreamId);
             Console.WriteLine($"Obtained SSL stream ID of {streamId} from {opts.StreamId}");
         }
 
@@ -77,12 +78,9 @@ class Program
         //=============================================================================
         // Find matching songs in SSL and add the attribute to it
         //=============================================================================
-        var ssl = new StreamerSongListClient(streamId,
-                                             opts.Role,
-                                             opts.AccessToken);
-
+        
         // Get list of all available attributes ([id][name])
-        var attributes = await ssl.GetAllAttributes();
+        var attributes = await ssl.GetAllAttributes(streamId);
 
         Console.WriteLine($"Stream {streamId} has {attributes.Count} attributes:");
         foreach (var attribute in attributes)
@@ -123,7 +121,7 @@ class Program
         int apiCalls = 0;
         foreach (var searchSong in validSongs)
         {
-            var matchSongs = await ssl.SearchSong(searchSong);
+            var matchSongs = await ssl.SearchSong(streamId, searchSong);
             apiCalls++;
 
             Song matchedSong = new Song();
@@ -143,7 +141,7 @@ class Program
             var matchedSongTitle = matchedSong.ToString();
 
             // Check if attribute already in song
-            bool hasAttribute = matchedSong.AttributeIds.Contains(matchingId);
+            bool hasAttribute = matchedSong.Attributes.Any(a => a.Id == matchingId);
 
             // Print the song list title next to the matched SSL song title
             Console.WriteLine($"|{(hasAttribute ? " " : "+")}{searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {matchedSongTitle.Substring(0, Math.Min(matchedSongTitle.Length, TITLE_WIDTH)),-TITLE_WIDTH}|");
@@ -151,7 +149,7 @@ class Program
             // Add the attribute if required, and if the write flag is set
             if (!hasAttribute && opts.Write)
             {
-                await ssl.AddAttribute(matchedSong, matchingId);
+                await ssl.AddAttribute(streamId, matchedSong, matchingId);
                 apiCalls++;
             }
 

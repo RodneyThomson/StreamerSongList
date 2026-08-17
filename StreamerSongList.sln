@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidateSongListActive", "ValidateSongListActive\ValidateSongListActive.csproj", "{225ED0FA-A65B-4593-B24A-635273860843}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{6C84706A-796C-448C-84EA-BE624905F46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C84706A-796C-448C-84EA-BE624905F46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C84706A-796C-448C-84EA-BE624905F46E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{225ED0FA-A65B-4593-B24A-635273860843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{225ED0FA-A65B-4593-B24A-635273860843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{225ED0FA-A65B-4593-B24A-635273860843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{225ED0FA-A65B-4593-B24A-635273860843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
