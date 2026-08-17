@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/AddAttributeToSongList/Properties/launchSettings.json
+/SetCostOnSongList/Properties/launchSettings.json
+/ValidateSongListActive/Properties/launchSettings.json
