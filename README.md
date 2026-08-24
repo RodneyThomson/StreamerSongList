@@ -10,7 +10,7 @@ C# scripts and library for interfacing with StreamerSongList (https://www.stream
     - SetPrice(Song song, float price)
 - /AddAttributeToSongList : Adds the desired attribute to all songs titles provided in text file [WARNING - currently not working due to API bug - any previous attributes will be lost]
 - /SetCostOnSongList : Sets the price for all songs titles provided in text file [WARNING - currently not working due to API bug - any attributes set on song will be lost]
-- 
+- /RestoreAttributesFromCsv : From a SSL CSV song export, set the attributes back on the songs (useful when I break things due to the above)
 
 ## Notes
 
