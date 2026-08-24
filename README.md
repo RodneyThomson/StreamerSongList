@@ -8,12 +8,10 @@ C# scripts and library for interfacing with StreamerSongList (https://www.stream
     - GetAllAttributes()
     - AddAttribute(Song song, int attributeId)
     - SetPrice(Song song, float price)
-- /AddAttributeToSongList : Adds the desired attribute to all songs titles provided in text file
-- /SetCostOnSongList : Sets the price for all songs titles provided in text file
+- /AddAttributeToSongList : Adds the desired attribute to all songs titles provided in text file [WARNING - currently not working due to API bug - any previous attributes will be lost]
+- /SetCostOnSongList : Sets the price for all songs titles provided in text file [WARNING - currently not working due to API bug - any attributes set on song will be lost]
+- 
 
 ## Notes
 
-- Assumes all API calls require Authorization header and accompanying access token (they don't - but anything that requires write permissions, or mod+ privileges such as searching inactive files DOES)
-- Access token can be read by navigating to https://www.streamersonglist.com/, logging in with your privileged account, and then looking at the Fetch/XHR requests in Developer Tools (See the Authorization request header)
-- Alternatively in the browser Developer Tools console enter: 
-`console.log(localStorage.getItem('StreamerSonglist_authToken'))`
+- All API calls require Authorization header with a User Access Token (See how to get yours at https://dev.streamersonglist.com/docs/authentication)
