@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RestoreAttributesFromCsv": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"C:\\temp\\song_export.csv\" -s \"kristikates\" -t \"IqfjGxRBXuc5ljG-ivWFM0SSkI6s9FTb\""
+    }
+  }
+}

@@ -124,7 +124,6 @@ class Program
             var matchSongs = await ssl.SearchSong(streamId, searchSong);
             apiCalls++;
 
-            Song matchedSong = new Song();
             if (matchSongs.Items.Count == 0) // No match! Can't do much about that
             {
                 Console.WriteLine($"| {searchSong.Substring(0, Math.Min(searchSong.Length, TITLE_WIDTH)),-TITLE_WIDTH} <-> {"NOT FOUND", TITLE_WIDTH}|");
@@ -137,7 +136,7 @@ class Program
             //   2) Get ALL songs from the streamer and do the song title matching myself (maybe later?)
             //
             // For now I'm doing option 1)
-            matchedSong = matchSongs.Items[0];
+            var matchedSong = matchSongs.Items[0];
             var matchedSongTitle = matchedSong.ToString();
 
             // Check if attribute already in song

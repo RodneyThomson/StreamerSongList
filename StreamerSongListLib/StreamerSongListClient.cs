@@ -1,9 +1,8 @@
 ﻿using StreamerSongList.Datatypes;
-using System;
-using System.Drawing;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace StreamerSongList;
 
@@ -36,7 +35,7 @@ public class StreamerSongListClient
         
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var result = JsonSerializer.Deserialize<StreamerInfo>(
+        var result = JsonSerializer.Deserialize<StreamerDetails>(
             json,
             new JsonSerializerOptions
             {
@@ -72,7 +71,7 @@ public class StreamerSongListClient
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<SearchResult>(
+            var result = JsonSerializer.Deserialize<SongsResponseBody>(
                 json,
                 new JsonSerializerOptions
                 {
@@ -98,7 +97,7 @@ public class StreamerSongListClient
     /// <summary>Search for a song by title or artist. Throws exception if search cannot be completed</summary>
     /// <returns> SearchResult which contains a list of 0 or more Songs found</returns>
     /// <remarks>showInactive requires mod/streamer authentication</remarks>
-    public async Task<SearchResult> SearchSong(
+    public async Task<SongsResponseBody> SearchSong(
         int streamerId,
         string searchText,
         bool showInactive = true,
@@ -112,14 +111,14 @@ public class StreamerSongListClient
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        var result = JsonSerializer.Deserialize<SearchResult>(
+        var result = JsonSerializer.Deserialize<SongsResponseBody>(
             json,
             new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
 
-        return result ?? new SearchResult();
+        return result ?? new SongsResponseBody();
     }
 
     /// <summary>
@@ -156,7 +155,7 @@ public class StreamerSongListClient
     }
 
     /// <summary>
-    /// Add attribute to specified song
+    /// Add attributeId to specified song. Existing attributeIds will be retained
     /// </summary>
     public async Task AddAttribute(
         int streamerId,
@@ -171,9 +170,41 @@ public class StreamerSongListClient
         // Otherwise add to song
         var url = $"https://api.streamersonglist.com/songs/{song.Id}?song_id={song.Id}";
 
+        Console.WriteLine($"Existing attributes: {string.Join(", ", song.Attributes.Select(x => x.Id))}");
+        Console.WriteLine($"Adding attribute: {attributeId}");
+
         var songUpdate = new UpdateSongBody() { AttributeIds = [.. song.Attributes.Select(x => x.Id).ToArray(), attributeId] };
     
-        var payload = JsonSerializer.Serialize(songUpdate, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        var payload = JsonSerializer.Serialize(songUpdate, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull});
+
+        var content = new StringContent(
+            payload,
+            Encoding.UTF8,
+            "application/json");
+
+        var response =
+            await _http.PatchAsync(
+                url,
+                content,
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    /// <summary>
+    /// Set attributes for specified song. Will overwrite any existing attributes. Use AddAttribute to add a single attribute without overwriting existing ones.
+    /// </summary>
+    public async Task SetAttributes(
+        int streamerId,
+        Song song,
+        List<int> attributeIds,
+        CancellationToken cancellationToken = default)
+    {
+        var url = $"https://api.streamersonglist.com/songs/{song.Id}?song_id={song.Id}";
+
+        var songUpdate = new UpdateSongBody() { AttributeIds = attributeIds }; // Leave all other fields as-is
+
+        var payload = JsonSerializer.Serialize(songUpdate, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
 
         var content = new StringContent(
             payload,
@@ -209,7 +240,7 @@ public class StreamerSongListClient
         // The /songs/{song_id} PATCH takes a UpdateSongBody parameter: https://dev.streamersonglist.com/api-reference?method=patch&path=%2Fsongs%2F%7Bsong_id%7D
         var updateSongBody = new UpdateSongBody() { MinAmount = price }; // Should be MinTokens, but the API uses MinAmount for some reason
         
-        var payload = JsonSerializer.Serialize(updateSongBody, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        var payload = JsonSerializer.Serialize(updateSongBody, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
 
         var content = new StringContent(
             payload,

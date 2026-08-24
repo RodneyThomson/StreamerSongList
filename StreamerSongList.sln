@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddAttributeToSongList", "AddAttributeToSongList\AddAttributeToSongList.csproj", "{E0352099-4ECF-4C39-95BC-557D8655D76D}"
 EndProject
@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidateSongListActive", "ValidateSongListActive\ValidateSongListActive.csproj", "{225ED0FA-A65B-4593-B24A-635273860843}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerSongListLib.Test", "StreamerSongListLib.Test\StreamerSongListLib.Test.csproj", "{E2A8F8A3-29F3-463F-A201-8D64A1676AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestoreAttributesFromCsv", "RestoreAttributesFromCsv\RestoreAttributesFromCsv.csproj", "{31E3F7D9-566C-45AB-8F0B-F64C54B83D68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +42,14 @@ Global
 		{225ED0FA-A65B-4593-B24A-635273860843}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{225ED0FA-A65B-4593-B24A-635273860843}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{225ED0FA-A65B-4593-B24A-635273860843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2A8F8A3-29F3-463F-A201-8D64A1676AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2A8F8A3-29F3-463F-A201-8D64A1676AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2A8F8A3-29F3-463F-A201-8D64A1676AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2A8F8A3-29F3-463F-A201-8D64A1676AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E3F7D9-566C-45AB-8F0B-F64C54B83D68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E3F7D9-566C-45AB-8F0B-F64C54B83D68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E3F7D9-566C-45AB-8F0B-F64C54B83D68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E3F7D9-566C-45AB-8F0B-F64C54B83D68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

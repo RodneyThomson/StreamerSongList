@@ -2,7 +2,10 @@
 
 namespace StreamerSongList.Datatypes;
 
-public class SearchResult
+/// <summary>
+///   https://dev.streamersonglist.com/api-reference?method=get&path=%2Fsongs%2Fall
+/// </summary>
+public class SongsResponseBody
 {
     [JsonIgnore]
     public bool Exists => Items.Count > 0;
